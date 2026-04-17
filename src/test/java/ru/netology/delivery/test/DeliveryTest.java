@@ -1,6 +1,5 @@
 package ru.netology.delivery.test;
 
-import com.codeborne.selenide.Selectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,5 +32,25 @@ class DeliveryTest {
         // firstMeetingDate и secondMeetingDate. Можно также вызывать методы generateCity(locale),
         // generateName(locale), generatePhone(locale) для генерации и получения в тесте соответственно города,
         // имени и номера телефона без создания пользователя в методе generateUser(String locale) в датагенераторе
+
+        $("[data-test-id='city'] input").setValue(validUser.getCity());
+        $("[data-test-id='date'] input").sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME), Keys.DELETE);
+        $("[data-test-id='date'] input").setValue(firstMeetingDate);
+        $("[data-test-id='name'] input").setValue(validUser.getName());
+        $("[data-test-id='phone'] input").setValue(validUser.getPhone());
+        $("[data-test-id='agreement']").click();
+        $(".button span.button__content").click();
+        $("[data-test-id='success-notification']")
+                .should(visible, Duration.ofSeconds(15))
+                .should(text("Успешно! Встреча успешно запланирована на " + firstMeetingDate));
+        //после получения сообщения о запланированной встрече вводим новую дату для того же пользователя
+        $("[data-test-id='date'] input").sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME), Keys.DELETE);
+        $("[data-test-id='date'] input").setValue(secondMeetingDate);
+        $(".button span.button__content").click();
+        $("[data-test-id='replan-notification']")
+                .should(visible).should(text("Необходимо подтверждение"));
+        $("[data-test-id=replan-notification] button").click();
+        $("[data-test-id='success-notification']")
+                .should(visible).should(text("Успешно! Встреча успешно запланирована на " + secondMeetingDate));
     }
 }
